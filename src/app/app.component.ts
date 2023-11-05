@@ -17,24 +17,25 @@ export class AppComponent {
   outputText: object = {};
   test: boolean = false;
 
-  // ngDoCheck(){
-  //   this.encodeDecode();
-  // }
-
-  ngOnInit() {
-    this.encodeDecode();
+  async ngOnInit() {
+    this.encodeDecode(this.inputText);
   }
 
   inputValue(event: any) {
-    if (event) {
+    if (event.target.value != null) {
       this.inputText = event.target.value;
-      this.encodeDecode();
+      this.encodeDecode(event.target.value);
     }
   }
 
-  encodeDecode() {
-    let regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-    let test = regex.test(this.inputText);
-    this.outputText = (test != undefined || test != '') ? JSON.parse(atob(this.inputText)) : 'Unable to display in json format';
+  encodeDecode(data?: any) {
+    if (data != null || data != '' || data != undefined) {
+      let regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+      let test = regex.test(data);
+      this.outputText = test ? JSON.parse(atob(data)) : 'Unable to display in json format';
+    }
+
+    // this.outputText = test ? temp : 'Unable to display in json format';
+    // this.outputText = test ? JSON.parse(atob(this.inputText)) : 'Unable to display in json format';
   }
 }
