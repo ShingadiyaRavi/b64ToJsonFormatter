@@ -14,8 +14,8 @@ export class AppComponent {
   }
 
   inputText: string = 'W3siaW5mb3JtYXRpb24iOgpbeyJuYW1lIjoiU2hpbmdhZGl5YSBSYXZpIn0seyJkZXBhcnRtZW50Ijoid2ViIiwiZGVzY3JpcHRpb24iOiJBbnkgc3VnZ2VzdGlvbiB3aWxsIGJlIGFjY2VwdGFibGUifV0KfSx7ImRhdGEiOiJudWxsIn1d';
-  outputText: object = {};
-  test: boolean = false;
+  outputText:any;
+  isJson:boolean = false;
 
   async ngOnInit() {
     this.encodeDecode(this.inputText);
@@ -29,13 +29,30 @@ export class AppComponent {
   }
 
   encodeDecode(data?: any) {
-    if (data != null || data != '' || data != undefined) {
-      let regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-      let test = regex.test(data);
-      this.outputText = test ? JSON.parse(atob(data)) : 'Unable to display in json format';
-    }
+    this.isJson = false;
+    if (data && (data != null || data != "" || data != undefined)) {
+      let validBase64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+      let isBase64 = validBase64.test(data);
+      if(isBase64){
+        let tempData:any = atob(data);
 
-    // this.outputText = test ? temp : 'Unable to display in json format';
-    // this.outputText = test ? JSON.parse(atob(this.inputText)) : 'Unable to display in json format';
+        if((tempData.charAt(0) == '[' || tempData.charAt(0) == '{') && (tempData.charAt(tempData.length - 1) == ']' || tempData.charAt(tempData.length - 1) == '}')){
+          tempData = JSON.parse(tempData);
+          this.isJson = true;
+          this.outputText = tempData;
+        }
+        else if((tempData.charAt(0) != '[' && tempData.charAt(0) != '{') && (tempData.charAt(tempData.length - 1) != ']' && tempData.charAt(tempData.length - 1) != '}')){
+          this.outputText = tempData;
+        }else{
+          this.outputText = "Invalid Encoded String Entered";
+        }
+      }
+      else{
+        this.outputText = "Invalid Encoded String Entered";
+      }
+    }
+    else{
+      this.outputText = "No Data Available";
+    }
   }
 }
